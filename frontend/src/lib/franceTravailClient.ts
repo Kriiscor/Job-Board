@@ -23,6 +23,8 @@ export async function rechercherOffres(filtres: FiltresRecherche): Promise<Reche
     params.set('maxCreationDate', now.toISOString().split('.')[0] + 'Z')
   }
 
+  params.set('tri', '1')
+
   const pageSize = 20
   const start = filtres.page * pageSize
   params.set('range', `${start}-${start + pageSize - 1}`)

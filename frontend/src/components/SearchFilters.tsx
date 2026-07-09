@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -63,6 +64,28 @@ export function SearchFilters() {
 
   const commune = watch("commune");
   const alternance = watch("alternance");
+  const allValues = watch();
+
+  const isFirstRender = useRef(true);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setFiltres({
+        ...allValues,
+        distance: allValues.commune ? allValues.distance : undefined,
+        periodeDays: allValues.periodeDays === "all" ? "" : allValues.periodeDays,
+      });
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [JSON.stringify(allValues)]);
 
   const onSubmit = (values: FormValues) => {
     setFiltres({
